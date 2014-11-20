@@ -33,18 +33,13 @@ func (a bucketslice) Less(i, j int) bool { return len(a[i].keys) > len(a[j].keys
 // MinHashTable is a wrapper for the minimal perfect hash tables
 type MinHashTable struct {
 	G []int
-	V []*NilInt
-}
-
-// NilInt is a nilable int wrapper
-type NilInt struct {
-	V int
+	V []*int
 }
 
 // Lookup the given key in the minimal perfect hash table
-func (table *MinHashTable) Lookup(key string) int {
+func (table *MinHashTable) Lookup(key string) *int {
 	d := table.G[Hash(0, key)%len(table.G)]
-	var value *NilInt
+	var value *int
 	if d < 0 {
 		value = table.V[0-d-1]
 	} else {
@@ -52,10 +47,10 @@ func (table *MinHashTable) Lookup(key string) int {
 	}
 
 	if value != nil {
-		return value.V
+		return value
 	}
 
-	return 0
+	return new(int)
 }
 
 // Create the minimal perfect hash table based on the given dictionary
@@ -63,7 +58,7 @@ func Create(dict map[string]int) *MinHashTable {
 	size := len(dict)
 	buckets := make(map[int]*bucket)
 	g := make([]int, size)
-	v := make([]*NilInt, size)
+	v := make([]*int, size)
 
 	// Place all of the keys into buckets
 	for k := range dict {
@@ -113,7 +108,9 @@ func Create(dict map[string]int) *MinHashTable {
 
 		g[Hash(0, bucket.keys[0])%size] = d
 		for i := 0; i < len(bucket.keys); i++ {
-			v[slots[i]] = &NilInt{V: dict[bucket.keys[i]]}
+			value := new(int)
+			*value = dict[bucket.keys[i]]
+			v[slots[i]] = value
 		}
 	}
 
@@ -144,7 +141,9 @@ func Create(dict map[string]int) *MinHashTable {
 
 		// We subtract one to ensure it's negative even if the zeroith slot was used
 		g[Hash(0, bucket.keys[0])%size] = 0 - slot - 1
-		v[slot] = &NilInt{V: dict[bucket.keys[0]]}
+		value := new(int)
+		*value = dict[bucket.keys[0]]
+		v[slot] = value
 	}
 
 	return &MinHashTable{G: g, V: v}

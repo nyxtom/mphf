@@ -11,15 +11,15 @@ func TestCreate(t *testing.T) {
 
 	table := Create(dict)
 	val := table.Lookup("wonderful")
-	if val != 3 {
+	if *val != 3 {
 		t.Errorf("Lookup(\"wonderful\") expected 3 but got %v instead", val)
 	}
 	val2 := table.Lookup("hello")
-	if val2 != 1 {
+	if *val2 != 1 {
 		t.Errorf("Lookup(\"hello\") expected 1 but got %v instead", val)
 	}
 	val3 := table.Lookup("world")
-	if val3 != 4 {
+	if *val3 != 4 {
 		t.Errorf("Lookup(\"world\") expected 4 but got %v instead", val)
 	}
 }
